@@ -1,6 +1,7 @@
 from flask import Flask, request
 from dotenv import load_dotenv
 import os
+import awsgi
 from flask_cors import CORS
 from pymongo import MongoClient
 
@@ -23,6 +24,7 @@ def post_flight():
         flights.insert_one({'flight': flight})
         return f"Flight '{flight}' added to database"
 
+
 @app.route("/hotel", methods=["POST"])
 def post_hotel():
     if request.method == 'POST':
@@ -31,6 +33,11 @@ def post_hotel():
         # Example: Saving to MongoDB
         hotels.insert_one({'hotel': hotel})
         return f"Hotel '{hotel}' added to database"
+    
+
+def lambda_handler(event, context):
+    return awsgi.response(app, event, context, base64_content_types={"image/png"})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
