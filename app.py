@@ -1,11 +1,13 @@
 from flask import Flask, request
 from dotenv import load_dotenv
 import os
+from flask_cors import CORS
 from pymongo import MongoClient
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 client = MongoClient(os.getenv("MONGO_DB_URL"))
 db = client.flask_database
@@ -15,8 +17,8 @@ hotels = db.hotels
 @app.route("/flight", methods=["POST"])
 def post_flight():
     if request.method == 'POST':
-        data = request.get_json()
-        flight = data.get('flight', '')
+        data = request.get_json()  # Changed to request.get_json()
+        flight = data.get('url', [])
         # Example: Saving to MongoDB
         flights.insert_one({'flight': flight})
         return f"Flight '{flight}' added to database"
@@ -24,8 +26,8 @@ def post_flight():
 @app.route("/hotel", methods=["POST"])
 def post_hotel():
     if request.method == 'POST':
-        data = request.get_json()
-        hotel = data.get('hotel', '')
+        data = request.get_json()  # Changed to request.get_json()
+        hotel = data.get('url', [])
         # Example: Saving to MongoDB
         hotels.insert_one({'hotel': hotel})
         return f"Hotel '{hotel}' added to database"
